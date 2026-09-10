@@ -55,7 +55,6 @@ body.login-page-active {
       transparent 800px
     );
   background-size: 40px 40px, 100% 100%, 100% 100%;
-  background-attachment: fixed;
 }
 
 .auth-back-btn {
@@ -103,9 +102,7 @@ body.login-page-active {
 .auth-card {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #ffffff;
   border-radius: 32px;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -114,6 +111,7 @@ body.login-page-active {
   height: min(800px, 92dvh);
   margin: auto;
   position: relative;
+  transform: translateZ(0);
 }
 
 /* Visual Side */
@@ -189,22 +187,26 @@ body.login-page-active {
   width: min(95%, 460px);
   max-height: 48vh;
   margin: 0 auto;
-  filter: drop-shadow(0 30px 60px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 16px 28px rgba(0,0,0,0.28));
   position: relative;
   z-index: 5;
   flex-shrink: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .auth-robot-glow {
   position: absolute;
   width: 120%;
   height: 120%;
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.35) 0%, transparent 70%);
   z-index: -1;
-  filter: blur(20px);
+  filter: blur(16px);
+  transform: translateZ(0);
+  contain: strict;
 }
 
 .auth-robot-img {
@@ -215,22 +217,24 @@ body.login-page-active {
   object-fit: contain;
   position: relative;
   z-index: 2;
+  transform: translateZ(0);
 }
 
 .insight-chip {
   position: absolute;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: clamp(6px, 1.2vh, 10px) clamp(12px, 2vw, 18px);
   border-radius: 999px;
   font-weight: 700;
   color: #ffffff;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   z-index: 1;
   transition: opacity 0.3s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @media (max-width: 768px) {
@@ -308,25 +312,29 @@ body.login-page-active {
 .auth-visual-wave-5 { animation-delay: 0.4s; }
 .auth-visual-wave-6 { animation-delay: 0.6s; }
 
-/* Optimized Floating Animations */
+/* Hardware-Accelerated 3D Floating Animations */
 @keyframes floatRobot {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -12px, 0); }
 }
 
 @keyframes floatChip {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(15px, -20px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(10px, -14px, 0); }
 }
 
 .auth-robot-floating {
-  animation: floatRobot 4s ease-in-out infinite;
+  animation: floatRobot 4.5s ease-in-out infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .insight-chip-floating {
   animation: floatChip 6s ease-in-out infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Form Side */

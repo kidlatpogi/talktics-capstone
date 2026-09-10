@@ -22,6 +22,24 @@ if (typeof window !== 'undefined') {
   const p2 = new Image(); p2.src = bigkasLogoUrl;
 }
 
+const INSIGHT_WORDS = [
+  { text: 'Visual', size: '1rem', opacity: 0.8, top: '15%', left: '12%', delay: 0 },
+  { text: 'Vocal', size: '0.95rem', opacity: 0.7, top: '22%', left: '80%', delay: 1 },
+  { text: 'Verbal', size: '0.9rem', opacity: 0.6, top: '68%', left: '8%', delay: 0.5 },
+  { text: 'Gesture', size: '1.1rem', opacity: 0.9, top: '12%', left: '65%', delay: 2 },
+  { text: 'Eye Contact', size: '1rem', opacity: 0.75, top: '55%', left: '82%', delay: 1.5 },
+  { text: 'Jitter', size: '0.8rem', opacity: 0.5, top: '78%', left: '70%', delay: 3 },
+  { text: 'Shimmer', size: '0.9rem', opacity: 0.65, top: '38%', left: '6%', delay: 2.5 },
+  { text: 'Confidence', size: '1.15rem', opacity: 0.95, top: '50%', left: '10%', delay: 0 },
+  { text: 'Clarity', size: '1rem', opacity: 0.8, top: '82%', left: '22%', delay: 4 },
+  { text: 'Presence', size: '1.1rem', opacity: 0.85, top: '18%', left: '42%', delay: 1.2 },
+  { text: 'Empower', size: '0.9rem', opacity: 0.6, top: '72%', left: '48%', delay: 2.2 },
+  { text: 'Growth', size: '1.05rem', opacity: 0.8, top: '8%', left: '85%', delay: 0.8 },
+  { text: 'Flow', size: '1rem', opacity: 0.7, top: '48%', left: '88%', delay: 3.5 },
+  { text: 'Impact', size: '1.1rem', opacity: 0.9, top: '30%', left: '18%', delay: 4.5 },
+  { text: 'Authentic', size: '0.95rem', opacity: 0.75, top: '62%', left: '60%', delay: 5 },
+];
+
 function RegisterPageDesktop({ managePageClass = true }) {
   const layoutRef = useRef(null);
   const navigate = useNavigate();
@@ -132,7 +150,9 @@ function RegisterPageDesktop({ managePageClass = true }) {
   const mapSignupError = (message) => {
     if (!message) return 'Registration failed.';
     const normalized = message.toLowerCase();
-    if (normalized.includes('already registered')) return 'Email already exists.';
+    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+      return 'An account with this email already exists. Please log in instead.';
+    }
     return message;
   };
 
@@ -179,31 +199,13 @@ function RegisterPageDesktop({ managePageClass = true }) {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+    hidden: { opacity: 0, y: 14 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }
   };
-
-  const insightWords = [
-    { text: 'Visual', size: '1rem', opacity: 0.8, top: '15%', left: '12%', delay: 0 },
-    { text: 'Vocal', size: '0.95rem', opacity: 0.7, top: '22%', left: '80%', delay: 1 },
-    { text: 'Verbal', size: '0.9rem', opacity: 0.6, top: '68%', left: '8%', delay: 0.5 },
-    { text: 'Gesture', size: '1.1rem', opacity: 0.9, top: '12%', left: '65%', delay: 2 },
-    { text: 'Eye Contact', size: '1rem', opacity: 0.75, top: '55%', left: '82%', delay: 1.5 },
-    { text: 'Jitter', size: '0.8rem', opacity: 0.5, top: '78%', left: '70%', delay: 3 },
-    { text: 'Shimmer', size: '0.9rem', opacity: 0.65, top: '38%', left: '6%', delay: 2.5 },
-    { text: 'Confidence', size: '1.15rem', opacity: 0.95, top: '50%', left: '10%', delay: 0 },
-    { text: 'Clarity', size: '1rem', opacity: 0.8, top: '82%', left: '22%', delay: 4 },
-    { text: 'Presence', size: '1.1rem', opacity: 0.85, top: '18%', left: '42%', delay: 1.2 },
-    { text: 'Empower', size: '0.9rem', opacity: 0.6, top: '72%', left: '48%', delay: 2.2 },
-    { text: 'Growth', size: '1.05rem', opacity: 0.8, top: '8%', left: '85%', delay: 0.8 },
-    { text: 'Flow', size: '1rem', opacity: 0.7, top: '48%', left: '88%', delay: 3.5 },
-    { text: 'Impact', size: '1.1rem', opacity: 0.9, top: '30%', left: '18%', delay: 4.5 },
-    { text: 'Authentic', size: '0.95rem', opacity: 0.75, top: '62%', left: '60%', delay: 5 },
-  ];
 
   return (
     <LazyMotion features={domAnimation}>
@@ -230,7 +232,7 @@ function RegisterPageDesktop({ managePageClass = true }) {
               <span>TalkTics</span>
             </div>
               <div className="auth-visual-content">
-              <div className="auth-robot-img-wrap">
+              <div className="auth-robot-img-wrap auth-robot-floating">
                 <div className="auth-robot-glow" />
                 <img 
                   src={robotImgUrl} 
@@ -244,16 +246,21 @@ function RegisterPageDesktop({ managePageClass = true }) {
               </div>
 
                 {/* Floating Insight Cloud */}
-                {insightWords.map((word, i) => (
-                  <m.div 
+                {INSIGHT_WORDS.map((word, i) => (
+                  <div 
                     key={i}
-                    className="insight-chip"
-                    style={{ top: word.top, left: word.left, fontSize: word.size, opacity: word.opacity }}
-                    animate={{ y: [0, -20, 0], x: [0, 15, 0] }}
-                    transition={{ duration: 6 + (i % 4), repeat: Infinity, delay: word.delay, ease: "easeInOut" }}
+                    className="insight-chip insight-chip-floating"
+                    style={{ 
+                      top: word.top, 
+                      left: word.left, 
+                      fontSize: word.size, 
+                      opacity: word.opacity,
+                      animationDelay: `${word.delay}s`,
+                      animationDuration: `${6 + (i % 4)}s`
+                    }}
                   >
                     {word.text}
-                  </m.div>
+                  </div>
                 ))}
 
                 <m.h2 variants={itemVariants} className="auth-hero-tagline">
