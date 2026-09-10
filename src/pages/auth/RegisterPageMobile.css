@@ -80,14 +80,15 @@
 
 .insight-chip-bg {
   position: absolute;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 4px 10px;
   border-radius: 999px;
   color: #fff;
   font-weight: 700;
   pointer-events: none;
   z-index: 1;
+  transform: translateZ(0);
 }
 
 /* 2. Brand Logo (Upper Left) */

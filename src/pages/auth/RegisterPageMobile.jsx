@@ -107,6 +107,15 @@ function RegisterPageMobile({ managePageClass = true }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const mapSignupError = (message) => {
+    if (!message) return 'Registration failed.';
+    const normalized = message.toLowerCase();
+    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+      return 'An account with this email already exists. Please log in instead.';
+    }
+    return message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -131,7 +140,7 @@ function RegisterPageMobile({ managePageClass = true }) {
           replace: true,
         });
       } else {
-        setErrors({ submit: result.error || 'Registration failed' });
+        setErrors({ submit: mapSignupError(result.error) || 'Registration failed' });
       }
     } catch {
       setErrors({ submit: 'An error occurred' });

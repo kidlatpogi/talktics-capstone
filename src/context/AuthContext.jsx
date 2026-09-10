@@ -1855,14 +1855,32 @@ export function AuthProvider({ children }) {
       `${resolvedFirstName} ${resolvedLastName}`.trim();
 
     const emailRedirectTo = getWebRedirectPath('/verify-email');
+    const ALREADY_REGISTERED_ERROR = 'An account with this email already exists. Please log in instead.';
 
     try {
-      // Race the OTP request against a 15-second timeout.
-      // Supabase sends this through the Magic Link/OTP template with {{ .Token }}.
-      const signupPromise = supabase.auth.signInWithOtp({
+      // Pre-check if email already exists in profiles table
+      try {
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('email', normalizedEmail)
+          .maybeSingle();
+
+        if (existingProfile) {
+          setIsLoading(false);
+          signupInProgressRef.current = false;
+          setError(ALREADY_REGISTERED_ERROR);
+          return { success: false, error: ALREADY_REGISTERED_ERROR };
+        }
+      } catch {
+        // Non-blocking fallback to auth check
+      }
+
+      // Supabase signup attempt
+      const signupPromise = supabase.auth.signUp({
         email: normalizedEmail,
+        password,
         options: {
-          shouldCreateUser: true,
           emailRedirectTo,
           data: {
             full_name: resolvedFullName,
@@ -1895,9 +1913,8 @@ export function AuthProvider({ children }) {
 
         // Already registered
         if (errMsg.toLowerCase().includes('already registered') || errMsg.toLowerCase().includes('already exists') || errMsg.toLowerCase().includes('already been registered')) {
-          const message = 'This email is already registered. Try logging in instead.';
-          setError(message);
-          return { success: false, error: message };
+          setError(ALREADY_REGISTERED_ERROR);
+          return { success: false, error: ALREADY_REGISTERED_ERROR };
         }
 
         // SMTP / email sending failure (500)
@@ -1905,9 +1922,10 @@ export function AuthProvider({ children }) {
         // Try to recover by resending the confirmation email separately.
         if (errStatus === 500 || errMsg.toLowerCase().includes('internal server') || errMsg.toLowerCase().includes('sending confirmation')) {
           try {
-            const { error: resendErr } = await supabase.auth.signInWithOtp({
+            const { error: resendErr } = await supabase.auth.resend({
+              type: 'signup',
               email: normalizedEmail,
-              options: { shouldCreateUser: false, emailRedirectTo },
+              options: { emailRedirectTo },
             });
 
             if (!resendErr) {
@@ -1937,11 +1955,18 @@ export function AuthProvider({ children }) {
         return { success: false, error: errMsg };
       }
 
+      // Check for existing account when Supabase email enumeration protection is ON:
+      // Supabase returns 200 with identities: [] if the account already exists.
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        setError(ALREADY_REGISTERED_ERROR);
+        return { success: false, error: ALREADY_REGISTERED_ERROR };
+      }
+
       if (!data.session) {
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem(PENDING_SIGNUP_PASSWORD_KEY, password);
         }
-        // Email verification required. Supabase sends the 6-digit code via the Magic Link/OTP template.
+        // Email verification required.
         setPendingEmailVerification(true);
         setPendingEmail(normalizedEmail);
         return { success: true, requiresEmailConfirmation: true };
@@ -2023,7 +2048,18 @@ export function AuthProvider({ children }) {
 
     const emailRedirectTo = getWebRedirectPath('/verify-email');
 
-    // Resend via Supabase (sends through the Magic Link/OTP template)
+    // Try standard signup resend first
+    const { error: resendErr } = await supabase.auth.resend({
+      type: 'signup',
+      email: normalizedEmail,
+      options: { emailRedirectTo },
+    });
+
+    if (!resendErr) {
+      return { success: true };
+    }
+
+    // Fallback via Supabase signInWithOtp (Magic Link/OTP template)
     const { error: err } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: { shouldCreateUser: false, emailRedirectTo },

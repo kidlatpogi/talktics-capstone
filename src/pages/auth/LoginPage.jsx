@@ -414,12 +414,12 @@ function LoginPageDesktop({ managePageClass = true }) {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+    hidden: { opacity: 0, y: 14 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }
   };
 
   return (
@@ -451,12 +451,7 @@ function LoginPageDesktop({ managePageClass = true }) {
             </Motion.div>
             
             <div className="auth-visual-content">
-              <Motion.div
-                className="auth-robot-img-wrap auth-robot-floating"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
+              <div className="auth-robot-img-wrap auth-robot-floating">
                 <div className="auth-robot-glow" />
                 <img 
                   src="https://assets.bigkas.site/Sprites/Robot/0001.webp" 
@@ -467,7 +462,7 @@ function LoginPageDesktop({ managePageClass = true }) {
                   width="460"
                   height="460"
                 />
-              </Motion.div>
+              </div>
 
               {/* Floating Insight Cloud */}
               {INSIGHT_WORDS.map((word, i) => (

@@ -16,10 +16,10 @@ function popPendingSignupPassword() {
 export const authApi = {
   login:  (email, password) => supabase.auth.signInWithPassword({ email, password }),
   register: (email, password, name) =>
-    supabase.auth.signInWithOtp({
+    supabase.auth.signUp({
       email,
+      password,
       options: {
-        shouldCreateUser: true,
         data: { full_name: name },
       },
     }),
@@ -30,12 +30,19 @@ export const authApi = {
 
   /**
    * Verify a 6-digit email OTP submitted by the user after registration.
+   * Supports standard signup OTP (type: 'signup') and email OTP fallback (type: 'email').
    * @param {string} email - The email address the OTP was sent to.
    * @param {string} token - The 6-digit OTP code entered by the user.
    * @returns {Promise<{ data, error }>}
    */
   verifyEmailOtp: async (email, token) => {
-    const response = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+    let response = await supabase.auth.verifyOtp({ email, token, type: 'signup' });
+    if (response.error) {
+      const fallbackResponse = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+      if (!fallbackResponse.error) {
+        response = fallbackResponse;
+      }
+    }
     if (response.error) return response;
 
     const pendingPassword = popPendingSignupPassword();
@@ -44,19 +51,31 @@ export const authApi = {
       if (error) return { ...response, error };
     }
 
+    if (response.data?.user?.id && email) {
+      await supabase
+        .from('profiles')
+        .update({ email: email.trim().toLowerCase() })
+        .eq('id', response.data.user.id)
+        .catch(() => {});
+    }
+
     return response;
   },
 
   /**
-   * Resend the email OTP code to the given address.
+   * Resend the verification OTP code to the given address.
    * @param {string} email
    * @returns {Promise<{ data, error }>}
    */
-  resendSignupOtp: (email) =>
-    supabase.auth.signInWithOtp({
+  resendSignupOtp: async (email) => {
+    const signupResend = await supabase.auth.resend({ type: 'signup', email });
+    if (!signupResend.error) return signupResend;
+
+    return supabase.auth.signInWithOtp({
       email,
       options: { shouldCreateUser: false },
-    }),
+    });
+  },
 };
 
 export default authApi;
