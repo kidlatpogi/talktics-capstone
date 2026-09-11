@@ -195,6 +195,17 @@ function SettingsPage() {
                   </div>
                   <IoChevronForward className="sp-list-chevron" />
                 </button>
+
+                <button className="sp-list-item" onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}>
+                  <div className="sp-list-icon">
+                    <IoShieldCheckmarkOutline />
+                  </div>
+                  <div className="sp-list-content">
+                    <span className="sp-list-label">Account Management</span>
+                    <span className="sp-list-hint">Deactivate or delete your account</span>
+                  </div>
+                  <IoChevronForward className="sp-list-chevron" />
+                </button>
               </div>
             </div>
 
