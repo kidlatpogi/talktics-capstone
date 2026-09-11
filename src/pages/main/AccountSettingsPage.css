@@ -1,194 +1,244 @@
-.subpage-layout.account-settings-layout {
-  min-height: 100vh;
+/* =========================================================================
+   ACCOUNT SETTINGS PAGE - TalkTics Design System
+   Matches Profile Information & Password & Security
+   ========================================================================= */
+
+.danger-heading {
+  color: #dc2626 !important;
+}
+
+[data-theme='dark'] .danger-heading {
+  color: #f87171 !important;
+}
+
+.account-action-btn {
+  min-width: 220px;
+}
+
+.settings-profile-page .settings-divider {
+  margin: 16px 0 24px;
+}
+
+/* ── Modal overlay & container ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='dark'] .modal-box {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b3954;
+  margin-bottom: 12px;
+  font-family: inherit;
+}
+
+[data-theme='dark'] .modal-title {
+  color: #f1f5f9;
+}
+
+.modal-desc {
+  font-size: 14.5px;
+  color: #64748b;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+[data-theme='dark'] .modal-desc {
+  color: #94a3b8;
+}
+
+/* ── Warning banner ── */
+.modal-warning-banner {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   box-sizing: border-box;
 }
 
-.subpage-layout.account-settings-layout .subpage-frame {
-  width: min(980px, 100%);
+[data-theme='dark'] .modal-warning-banner {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.45);
 }
 
-.subpage-layout.account-settings-layout .subpage-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
-  font-size: 14px;
-  letter-spacing: -0.224px;
-}
-
-.subpage-layout.account-settings-layout .subpage-breadcrumb-link {
-  color: #5a7863;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.subpage-layout.account-settings-layout .subpage-breadcrumb-link:hover {
-  color: #4a6352;
-}
-
-.subpage-layout.account-settings-layout .subpage-breadcrumb-sep {
-  color: rgba(11, 57, 84, 0.48);
-}
-
-.subpage-layout.account-settings-layout .subpage-breadcrumb-current {
-  color: #3c4952;
-  font-weight: 600;
-}
-
-.account-section {
-  margin-bottom: 16px;
-}
-
-.account-settings-page {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: rgba(11, 57, 84, 0.12) 0 10px 28px 0;
-  margin: 0;
-  width: 100%;
-}
-
-.account-settings-page .page-card,
-.account-settings-page .btn-row {
-  max-width: 760px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.account-settings-page .btn-row {
-  padding-bottom: 24px;
-}
-
-.account-settings-page .btn-secondary {
-  background: #f5f5f5;
-  color: #3c4952;
-}
-
-.account-settings-header {
-  justify-content: center;
-}
-
-.account-settings-page .inner-page-title {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 40px;
-  line-height: 1.1;
-  letter-spacing: -0.28px;
-  color: #0b3954;
-}
-
-.account-section-title {
+.modal-warning-icon {
   font-size: 20px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.modal-warning-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .modal-warning-text {
+  color: #fca5a5;
+}
+
+/* ── Form elements inside modal ── */
+.modal-box .form-group {
+  margin-bottom: 18px;
+}
+
+.modal-box .form-label {
+  display: block;
+  font-size: 13.5px;
   font-weight: 600;
-  color: #0b3954;
-  margin: 0 0 6px;
+  color: #334155;
+  margin-bottom: 8px;
 }
 
-.account-section-title.danger {
-  color: #0b3954;
+[data-theme='dark'] .modal-box .form-label {
+  color: #cbd5e1;
 }
 
-.account-section-desc {
-  font-size: 17px;
-  color: rgba(11, 57, 84, 0.8);
-  line-height: 1.47;
-  letter-spacing: -0.224px;
-  margin: 0 0 14px;
-}
-
-.danger-zone {
-  border: 1.5px solid rgba(90, 120, 99, 0.25);
-}
-
-.account-settings-page .form-input:focus,
-.account-settings-page .form-input:focus-visible {
-  border-color: #10B981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-  outline: none !important;
-}
-
-.account-settings-page .btn-outline {
-  border-color: #5a7863;
-  color: #5a7863;
-}
-
-.account-settings-page .btn-outline:hover {
-  background: #5a7863;
-  color: #ffffff;
-}
-
-.account-settings-page .account-btn-primary {
-  background: #5a7863;
-  color: #ffffff;
-  border-color: #5a7863;
-}
-
-.account-settings-page .account-btn-primary:hover {
-  background: #4a6352;
-  color: #ffffff;
-}
-
-[data-theme='dark'] .account-section-title {
-  color: #F0F0F0;
-}
-
-[data-theme='dark'] .account-section-desc {
-  color: rgba(240,240,240,0.62);
-}
-
-[data-theme='dark'] .danger-zone {
-  border-color: rgba(255,59,48,0.42);
-}
-
-.modal-warning-banner {
+.modal-box .form-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
   transition: all 0.2s ease;
 }
 
-[data-theme='dark'] .modal-warning-banner {
-  background: rgba(239, 68, 68, 0.15) !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+.modal-box .form-input:focus {
+  border-color: #10B981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-[data-theme='dark'] .modal-warning-banner p {
-  color: #fca5a5 !important;
+[data-theme='dark'] .modal-box .form-input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
 }
 
-.modal-box .btn-danger {
+[data-theme='dark'] .modal-box .form-input:focus {
+  border-color: #10B981;
+  background: #0f172a;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* ── Modal buttons ── */
+.modal-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-btn {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn--secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.modal-btn--secondary:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+[data-theme='dark'] .modal-btn--secondary {
+  background: #334155;
+  color: #cbd5e1;
+  border-color: #475569;
+}
+
+[data-theme='dark'] .modal-btn--secondary:hover {
+  background: #475569;
+  color: #f8fafc;
+}
+
+.modal-btn--danger {
   background: #dc2626;
   color: #ffffff;
-  border: 1.5px solid #dc2626;
-  border-radius: 9999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  border-color: #dc2626;
 }
 
-.modal-box .btn-danger:hover {
+.modal-btn--danger:hover:not(:disabled) {
   background: #b91c1c;
   border-color: #b91c1c;
 }
 
-.modal-box .btn-danger:disabled {
-  opacity: 0.6;
+.modal-btn--danger:disabled {
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .subpage-layout.account-settings-layout {
-    min-height: calc(100dvh - 160px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-    padding: var(--mobile-px);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-  .subpage-layout.account-settings-layout .subpage-frame,
-  .account-settings-page {
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+  .modal-box {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+  .modal-btn-row {
+    flex-direction: column-reverse;
+  }
+  .modal-btn {
     width: 100%;
-    max-width: 400px;
   }
 }
