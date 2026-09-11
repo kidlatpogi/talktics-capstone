@@ -292,7 +292,12 @@ function ProtectedRoute() {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  if (user?.onboardingStage === 'profiling' && pathname !== ROUTES.USER_PROFILING) {
+  const isSettingsOrAccountRoute =
+    pathname === ROUTES.ACCOUNT_SETTINGS ||
+    pathname === ROUTES.SETTINGS ||
+    pathname === ROUTES.CHANGE_PASSWORD;
+
+  if (user?.onboardingStage === 'profiling' && pathname !== ROUTES.USER_PROFILING && !isSettingsOrAccountRoute) {
     return <Navigate to={ROUTES.USER_PROFILING} replace />;
   }
 
@@ -300,6 +305,7 @@ function ProtectedRoute() {
     user?.onboardingStage === 'pretest' &&
     pathname !== ROUTES.USER_PRETEST &&
     pathname !== ROUTES.USER_ANALYZING &&
+    !isSettingsOrAccountRoute &&
     !pathname.startsWith(ROUTES.TRAINING) &&
     !pathname.startsWith('/session')
   ) {
@@ -309,6 +315,7 @@ function ProtectedRoute() {
   if (
     user?.onboardingStage === 'analyzing' &&
     pathname !== ROUTES.USER_ANALYZING &&
+    !isSettingsOrAccountRoute &&
     !pathname.startsWith('/session')
   ) {
     return <Navigate to={ROUTES.USER_ANALYZING} replace />;

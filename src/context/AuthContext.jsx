@@ -2261,6 +2261,7 @@ export function AuthProvider({ children }) {
   const deactivateAccount = useCallback(async ({ password }) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { success: false, error: 'Not authenticated' };
+    const userId = session.user.id;
 
     // Verify password
     const { error: reAuthErr } = await supabase.auth.signInWithPassword({
@@ -2277,7 +2278,29 @@ export function AuthProvider({ children }) {
     });
     if (updateErr) return { success: false, error: updateErr.message };
 
-    // Sign the user out
+    // Mark archived in profiles table if available
+    try {
+      await supabase
+        .from('profiles')
+        .update({ archived_at: new Date().toISOString() })
+        .eq('id', userId);
+    } catch {
+      // Best-effort profile archive
+    }
+
+    // Delete session records from database if persistence enabled
+    if (ENV.ENABLE_SESSION_PERSISTENCE) {
+      try {
+        await supabase
+          .from('sessions')
+          .delete()
+          .eq('user_id', userId);
+      } catch {
+        // Best-effort session removal
+      }
+    }
+
+    // Sign the user out and clear active auth state
     await supabase.auth.signOut();
     setUser(null);
     clearAdminSession();

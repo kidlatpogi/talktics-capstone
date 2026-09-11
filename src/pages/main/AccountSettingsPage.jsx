@@ -64,8 +64,11 @@ function AccountSettingsPage() {
       if (result?.success === false) {
         setDeactivateError(result.error || 'Failed to deactivate account.');
         setIsDeactivating(false);
+        return;
       }
-      // On success, AuthContext signs out → auto-redirect to login
+      // On success, close modal and redirect to login
+      setShowDeactivateModal(false);
+      navigate(ROUTES.LOGIN, { replace: true });
     } catch {
       setDeactivateError('An unexpected error occurred.');
       setIsDeactivating(false);
@@ -90,9 +93,9 @@ function AccountSettingsPage() {
 
           {/* Deactivate section */}
           <div className="page-card account-section">
-            <p className="account-section-title">Deactivate Profile</p>
+            <p className="account-section-title">Deactivate Account</p>
             <p className="account-section-desc">
-              Temporarily deactivate your account. Your data will be preserved and you can reactivate by logging back in.
+              Permanently deactivate your account. Your active session will be revoked and access to your data will be removed.
             </p>
             <button className="btn-outline" onClick={() => { setDeactivatePassword(''); setDeactivateError(''); setShowDeactivateModal(true); }}>
               Deactivate Account
@@ -121,8 +124,25 @@ function AccountSettingsPage() {
         <div className="modal-overlay" onClick={() => { setShowDeactivateModal(false); setDeactivateError(''); }}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">Deactivate Account</h2>
+            
+            <div className="modal-warning-banner" style={{
+              background: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              borderRadius: '10px',
+              padding: '12px 14px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px'
+            }}>
+              <span style={{ fontSize: '18px', lineHeight: '1.2' }}>⚠️</span>
+              <p style={{ margin: 0, fontSize: '13.5px', lineHeight: '1.45', color: '#b91c1c', fontWeight: 500 }}>
+                <strong>Permanent Data Removal Warning:</strong> Deactivating your account will permanently remove access to your account and personal data. Your active session will be immediately revoked, and you will not be able to log back in.
+              </p>
+            </div>
+
             <p className="modal-desc">
-              Your account will be deactivated. You can reactivate it by logging back in. Enter your password to confirm.
+              To confirm deactivation, please enter your password below.
             </p>
 
             {deactivateError && <div className="page-error" style={{ marginBottom: 12 }}>{deactivateError}</div>}
@@ -134,6 +154,11 @@ function AccountSettingsPage() {
                 type="password"
                 value={deactivatePassword}
                 onChange={(e) => setDeactivatePassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isDeactivating) {
+                    handleDeactivate();
+                  }
+                }}
                 placeholder="Your current password"
                 autoFocus
               />
@@ -143,8 +168,8 @@ function AccountSettingsPage() {
               <button className="btn-secondary" onClick={() => { setShowDeactivateModal(false); setDeactivateError(''); }}>
                 Cancel
               </button>
-              <button className="btn-outline account-btn-primary" onClick={handleDeactivate} disabled={isDeactivating}>
-                {isDeactivating ? 'Deactivating…' : 'Deactivate'}
+              <button className="btn-danger account-btn-primary" onClick={handleDeactivate} disabled={isDeactivating}>
+                {isDeactivating ? 'Deactivating…' : 'Deactivate Account'}
               </button>
             </div>
           </div>
