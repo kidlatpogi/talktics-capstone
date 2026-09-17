@@ -44,7 +44,8 @@ yarn-error.log*
 /database
 
 # Workers
-/b01-ai-worker
+b01-ai-worker/node_modules/
+b01-ai-worker/.wrangler/
 
 # Cursor & Agent Rules
 /.cursorrules
