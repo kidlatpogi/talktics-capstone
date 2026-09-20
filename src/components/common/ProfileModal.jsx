@@ -7,7 +7,7 @@ import { ROUTES } from '../../utils/constants';
 import { ensureProfileModalAvatarSrc, invalidateProfileModalAvatarCache } from '../../utils/profileModalAvatarCache';
 import './ProfileModal.css';
 
-export default function ProfileModal({ isOpen, onClose }) {
+export default function ProfileModal({ isOpen, onClose, onRequestLogout }) {
   const navigate = useNavigate();
   const { user, logout } = useAuthContext();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -45,22 +45,27 @@ export default function ProfileModal({ isOpen, onClose }) {
   }, [avatarUrl]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen && !showLogoutConfirm) {
       setShowLogoutConfirm(false);
     }
-  }, [isOpen]);
+  }, [isOpen, showLogoutConfirm]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
-    if (isOpen) {
+    if (isOpen || showLogoutConfirm) {
       document.body.classList.add('profile-modal-open');
     } else {
       document.body.classList.remove('profile-modal-open');
     }
     return () => document.body.classList.remove('profile-modal-open');
-  }, [isOpen]);
+  }, [isOpen, showLogoutConfirm]);
 
   const handleLogoutClick = () => {
+    if (onRequestLogout) {
+      onRequestLogout();
+      return;
+    }
+    onClose?.();
     setShowLogoutConfirm(true);
   };
 
@@ -70,26 +75,28 @@ export default function ProfileModal({ isOpen, onClose }) {
 
   const handleConfirmLogout = () => {
     setShowLogoutConfirm(false);
-    onClose();
+    onClose?.();
     logout();
   };
 
   const handleNavigateToProfile = () => {
-    onClose();
+    onClose?.();
     navigate(ROUTES.PROFILE);
   };
 
   const handleNavigateToSettings = () => {
-    onClose();
+    onClose?.();
     navigate(ROUTES.SETTINGS);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !showLogoutConfirm) return null;
 
   const modalContent = (
     <>
-      <div className="profile-modal-backdrop" role="presentation" onClick={onClose} />
-      <div className="profile-modal-wrapper">
+      {isOpen && (
+        <>
+          <div className="profile-modal-backdrop" role="presentation" onClick={onClose} />
+          <div className="profile-modal-wrapper">
         <div className="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
           {/* Header */}
           <div className="profile-modal-header">
@@ -169,6 +176,8 @@ export default function ProfileModal({ isOpen, onClose }) {
           </nav>
         </div>
       </div>
+      </>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (

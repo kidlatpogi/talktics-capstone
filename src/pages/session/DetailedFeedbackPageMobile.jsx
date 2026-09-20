@@ -289,7 +289,7 @@ function buildReplayAction(session, navigate, isFree) {
 }
 
 // --- Component ---
-function DetailedFeedbackPageMobile({ sessionIdProp, isInnerView, onCloseInner, initialShowDetailed = false, activityTasks = [] }) {
+function DetailedFeedbackPageMobile({ sessionIdProp, sessionProp, isInnerView, onCloseInner, initialShowDetailed = false, activityTasks = [] }) {
   const navigate = useNavigate();
   const { sessionId: paramSessionId } = useParams();
   const sessionId = sessionIdProp || paramSessionId;
@@ -303,20 +303,35 @@ function DetailedFeedbackPageMobile({ sessionIdProp, isInnerView, onCloseInner, 
     if (locationState?.showDetailed !== undefined) return !!locationState.showDetailed;
     return initialShowDetailed || isInnerView === false;
   });
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 390,
+    height: typeof window !== 'undefined' ? window.innerHeight : 844,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { tasks: fallbackActivityTasks } = useAllActivitiesJourneyTasks();
   const providedActivityTasks = Array.isArray(activityTasks) ? activityTasks : [];
   const effectiveActivityTasks = providedActivityTasks.length ? providedActivityTasks : fallbackActivityTasks;
 
   const activityLookup = useMemo(() => buildActivityLookup(effectiveActivityTasks), [effectiveActivityTasks]);
   const rawSession = useMemo(() => {
+    const fromProp = sessionProp && String(sessionProp?.id || '') === String(sessionId || '') ? sessionProp : null;
     const fromState = locationState?.id === sessionId ? locationState : null;
     const fromContext = currentSession?.id === sessionId ? currentSession : null;
-    if (!fromState && !fromContext) return null;
+    if (!fromProp && !fromState && !fromContext) return null;
     return {
+      ...fromProp,
       ...fromState,
-      ...fromContext
+      ...fromContext,
     };
-  }, [currentSession, locationState, sessionId]);
+  }, [currentSession, locationState, sessionId, sessionProp]);
   const session = useMemo(() => mergeSessionActivity(rawSession, activityLookup), [activityLookup, rawSession]);
   const isFreshTrainingResult = !isInnerView && locationState?.id === sessionId && locationState?.showDetailed === false;
   const shouldShowBreadcrumb = !isInnerView && !isFreshTrainingResult;
@@ -696,18 +711,6 @@ function DetailedFeedbackPageMobile({ sessionIdProp, isInnerView, onCloseInner, 
     );
   }
 
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 390,
-    height: typeof window !== 'undefined' ? window.innerHeight : 844,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const showConfetti = (stagePassResult?.passed || Number(session?.confidence_score) >= 80);
 

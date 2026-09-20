@@ -160,6 +160,11 @@ export default function HistoryPageMobile({ isOpen, onClose, userSessions = [], 
     if (selectedSessionId) setInnerViewMode('results');
   }, [selectedSessionId]);
 
+  const selectedSession = useMemo(() => {
+    if (!selectedSessionId) return null;
+    return userSessions.find((s) => String(s?.id || '') === String(selectedSessionId || '')) || null;
+  }, [selectedSessionId, userSessions]);
+
   const dateFilteredSessions = useMemo(() => {
     const filtered = userSessions.filter((s) => {
       const d = new Date(s.created_at);
@@ -390,6 +395,7 @@ export default function HistoryPageMobile({ isOpen, onClose, userSessions = [], 
              <div className="history-mobile-session-view-content">
                 <DetailedFeedbackPageMobile
                   sessionIdProp={selectedSessionId} 
+                  sessionProp={selectedSession}
                   isInnerView={true} 
                   initialShowDetailed={innerViewMode === 'detailed'}
                   activityTasks={activityTasks}
