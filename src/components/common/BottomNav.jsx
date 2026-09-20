@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import {
@@ -10,6 +10,7 @@ import {
 } from 'react-icons/io5';
 import { ROUTES } from '../../utils/constants';
 import { useAchievementNavBadge } from '../../hooks/useAchievementNavBadge';
+import { useAuthContext } from '../../context/useAuthContext';
 import ProfileModal from './ProfileModal';
 import './BottomNav.css';
 
@@ -23,12 +24,47 @@ const NAV_ITEMS = [
 
 function BottomNav() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { logout } = useAuthContext();
   const achievementPendingCount = useAchievementNavBadge();
 
   const handleProfileClick = (e) => {
     e.preventDefault();
     setIsProfileModalOpen((prev) => !prev);
   };
+
+  const handleRequestLogout = () => {
+    setIsProfileModalOpen(false);
+    setShowLogoutConfirm(true);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
+
+  const handleConfirmLogout = () => {
+    setShowLogoutConfirm(false);
+    logout();
+  };
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    if (isProfileModalOpen || showLogoutConfirm) {
+      document.body.classList.add('profile-modal-open');
+    } else {
+      document.body.classList.remove('profile-modal-open');
+    }
+    return () => document.body.classList.remove('profile-modal-open');
+  }, [isProfileModalOpen, showLogoutConfirm]);
+
+  useEffect(() => {
+    if (!showLogoutConfirm) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') handleCancelLogout();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showLogoutConfirm]);
 
   const navContent = (
     <nav className="bottom-nav" aria-label="Mobile bottom navigation">
@@ -93,7 +129,50 @@ function BottomNav() {
   return (
     <>
       {typeof document !== 'undefined' ? createPortal(navContent, document.body) : navContent}
-      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onRequestLogout={handleRequestLogout}
+      />
+      {showLogoutConfirm && typeof document !== 'undefined' && createPortal(
+        <div
+          className="profile-modal-confirm-backdrop"
+          role="presentation"
+          onClick={handleCancelLogout}
+        >
+          <div
+            className="profile-modal-confirm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profile-modal-logout-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="profile-modal-logout-title" className="profile-modal-confirm-title">
+              Log out?
+            </h3>
+            <p className="profile-modal-confirm-message">
+              Are you sure you want to log out?
+            </p>
+            <div className="profile-modal-confirm-actions">
+              <button
+                type="button"
+                className="profile-modal-confirm-btn profile-modal-confirm-btn--cancel"
+                onClick={handleCancelLogout}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="profile-modal-confirm-btn profile-modal-confirm-btn--confirm"
+                onClick={handleConfirmLogout}
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

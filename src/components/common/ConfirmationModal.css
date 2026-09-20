@@ -6,7 +6,7 @@
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  z-index: 2500; /* Ensure it stays above everything */
+  z-index: 100000 !important; /* Ensure it stays above everything including bottom nav */
   display: flex;
   align-items: center;
   justify-content: center;
